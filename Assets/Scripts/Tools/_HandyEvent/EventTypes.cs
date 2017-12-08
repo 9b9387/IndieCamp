@@ -15,5 +15,7 @@
 		/// 鼠标点击3D空间物体(射线实现，需要物体带Collider组件)。
 		/// </summary>
 		mouse_click_object,
+
+		mouse_position,
 	}
 }
