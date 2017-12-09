@@ -25,5 +25,7 @@
 		hit_pit,
 
 		nav_finished,
+
+		click_item,
 	}
 }
