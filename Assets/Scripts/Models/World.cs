@@ -12,14 +12,23 @@ public class World : Singleton<World> {
 
 
 	List<GameObject> models;
+
+
+	public AudioSource audio_bmg;
+	public AudioSource audio_outfire;
+
+
+
 	// Use this for initialization
 	void Start () {
 		models = new List<GameObject> ();
 
 		EventManager.Instance.AddListener (HandyEvent.EventType.nav_finished, OnEnterComplate);
+		EventManager.Instance.AddListener (HandyEvent.EventType.fire_active, OnFireActive);
+		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 
 		CreateHominid ();
-
+		OnFireDeactive (null);
 	}
 	
 	// Update is called once per frame
@@ -35,7 +44,16 @@ public class World : Singleton<World> {
 		return models;
 	}
 
-	[MenuItem("CreateHominid")]
+	public void OnFireActive(EventArgs args) {
+		audio_outfire.Play ();
+		audio_bmg.Pause ();
+	}
+
+	public void OnFireDeactive(EventArgs args) {
+		audio_bmg.Play ();
+		audio_outfire.Stop ();
+	}
+
 	public void CreateHominid() {
 		for (int i = 0; i < 3; i++) {
 			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
