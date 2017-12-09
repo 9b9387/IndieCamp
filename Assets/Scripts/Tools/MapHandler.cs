@@ -93,6 +93,22 @@ public class MapHandler : MonoBehaviour {
 		return path;
 	}
 
+	public Vector2 GetRandomPoint(){
+		while (true) {
+			float x = Random.Range (Screen.width / 4, Screen.width / 4 * 3);
+			float y = Random.Range (Screen.height / 4, Screen.height / 4 * 3);
+
+			Vector2 pos = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0));
+			int idx = WorldPosToIndex (pos);
+			if (idx == -1)
+				return Vector2.zero;
+			
+			if (m_mapData.tileTypes[idx] == TileType.Empty){
+				return pos;
+			}
+		}
+	}
+
 	public Vector2 GetRandomPoint(bool isFarDis){
 		while (true) {
 			float x = Random.Range (Screen.width / 4, Screen.width / 4 * 3);
@@ -105,7 +121,7 @@ public class MapHandler : MonoBehaviour {
 			int idx = WorldPosToIndex (pos);
 			if (idx == -1)
 				return Vector2.zero;
-			
+
 			if (m_mapData.tileTypes[idx] == TileType.Empty){
 				return pos;
 			}
