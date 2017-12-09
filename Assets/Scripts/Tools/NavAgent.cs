@@ -73,13 +73,16 @@ public class NavAgent : MonoBehaviour {
 		}
 
 		Vector2 currentPoint = m_path [m_currentIdx];
+		if (m_currentIdx == m_path.Length - 1){
+			currentPoint = m_destination;
+		}
 		Vector2 direction = (currentPoint - currentPos).normalized;
 		Vector2 movement = direction * speed * Time.deltaTime;
 		transform.position += new Vector3 (movement.x, movement.y, 0);
 		m_isMoving = true;
 		m_isArrive = false;
 
-		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
+		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.01f;
 		if (isNeerToCurrentPoint){
 			m_currentIdx++;
 			if (m_currentIdx == m_path.Length){
