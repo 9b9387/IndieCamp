@@ -81,8 +81,10 @@ public class NavAgent : MonoBehaviour {
 		transform.position += new Vector3 (movement.x, movement.y, 0);
 		m_isMoving = true;
 		m_isArrive = false;
+		int side = transform.position.x < m_destination.x ? -1 : 1;
+		transform.localScale = new Vector3 (side, 1, 1);
 
-		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.01f;
+		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
 		if (isNeerToCurrentPoint){
 			m_currentIdx++;
 			if (m_currentIdx == m_path.Length){
