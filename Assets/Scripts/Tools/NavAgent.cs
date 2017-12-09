@@ -13,10 +13,17 @@ public class NavAgent : MonoBehaviour {
 	bool m_hasDestination = false;
 	int m_currentIdx = 0;
 	bool m_isMoving = false;
+	bool m_isArrive = true;
 
 	public bool IsMoving{
 		get{
 			return m_isMoving;
+		}
+	}
+
+	public bool IsArrive{
+		get{
+			return m_isArrive;
 		}
 	}
 
@@ -28,12 +35,14 @@ public class NavAgent : MonoBehaviour {
 		m_currentIdx = 0;
 		m_destination = destination;
 		m_hasDestination = true;
+		m_isArrive = false;
 		m_path = MapHandler.Instant.FindPath (new Vector2 (transform.position.x, transform.position.y), destination);
 	}
 
 	void OnProcessMapFinish(EventArgs args){
 		if (m_hasDestination){
 			m_currentIdx = 0;
+			m_isArrive = false;
 			m_path = MapHandler.Instant.FindPath (new Vector2 (transform.position.x, transform.position.y), m_destination);
 		}
 	}
@@ -55,6 +64,7 @@ public class NavAgent : MonoBehaviour {
 		float distance = Vector2.Distance (currentPos, m_destination);
 
 		if (distance < stoppingDistance) {
+			m_isArrive = true;
 			m_path = null;
 			m_currentIdx = 0;
 			m_hasDestination = false;
@@ -67,11 +77,13 @@ public class NavAgent : MonoBehaviour {
 		Vector2 movement = direction * speed * Time.deltaTime;
 		transform.position += new Vector3 (movement.x, movement.y, 0);
 		m_isMoving = true;
+		m_isArrive = false;
 
 		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
 		if (isNeerToCurrentPoint){
 			m_currentIdx++;
 			if (m_currentIdx == m_path.Length){
+				m_isArrive = true;
 				m_path = null;
 				m_currentIdx = 0;
 				m_hasDestination = false;
