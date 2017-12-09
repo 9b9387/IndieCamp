@@ -82,7 +82,7 @@ public class NavAgent : MonoBehaviour {
 		m_isMoving = true;
 		m_isArrive = false;
 		int side = transform.position.x < m_destination.x ? -1 : 1;
-		transform.localScale = new Vector3 (side, 1, 1);
+		transform.localScale = new Vector3 (side * transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
 		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
 		if (isNeerToCurrentPoint){
