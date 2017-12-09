@@ -66,18 +66,22 @@ public class NavAgent : MonoBehaviour {
 
 	void Update(){
 		if (m_path == null) {
+			Debug.Log ("1");
 			return;
 		}
 
 		if (m_path.Length == 0) {
+			Debug.Log ("2");
 			return;
 		}
 
 		if (m_currentIdx >= m_path.Length) {
+			Debug.Log ("3");
 			return;
 		}
 
 		if (!m_hasDestination) {
+			Debug.Log ("4");
 			return;
 		}
 		

@@ -75,8 +75,9 @@ public class World : Singleton<World> {
 		audio_outfire.Stop ();
 	}
 
+
 	public void CreateHominid() {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 5; i++) {
 			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 			NavAgent agent = huminid.GetComponent<NavAgent> ();
 			string tag = "enter";

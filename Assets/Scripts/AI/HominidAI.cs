@@ -62,7 +62,7 @@ public class HominidAI : MonoBehaviour {
 		if (isFire && campFire) {
 			campFire.SetActive (false);
 			isFire = false;
-			agent.speed = 1.0f;
+			agent.speed = 1.0f + RandomSpeed();
 			attackTimer = 0;
 			isHitPit = false;
 			isHitMeat = false;
@@ -220,7 +220,7 @@ public class HominidAI : MonoBehaviour {
 	Result SetMoveTarget() {
 //		Debug.Log ("setMovetarget" + campFire);
 		if (campFire) {
-			agent.speed = 5.0f;
+			agent.speed = 5.0f + RandomSpeed();
 			animator.SetBool ("Run", true);
 			agent.SetDestination (campFire.transform.position);
 //			Debug.Log (agent.IsMoving);
@@ -264,7 +264,7 @@ public class HominidAI : MonoBehaviour {
 
 	Result Parto() {
 		Vector2 target = MapHandler.Instant.GetRandomPoint (true);
-		agent.speed = 1.0f;
+		agent.speed = 1.0f+ RandomSpeed();
 		animator.SetBool ("Run", false);
 		agent.SetDestination (target);
 
@@ -325,7 +325,7 @@ public class HominidAI : MonoBehaviour {
 
 		if (nearestMeat) {
 			animator.SetBool ("Run", true);
-			agent.speed = 5.0f;
+			agent.speed = 5.0f + RandomSpeed();
 			agent.SetDestination (new Vector2(nearestMeat.transform.position.x, nearestMeat.transform.position.y));
 		}
 
@@ -333,7 +333,6 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	bool IsArriveMeat() {
-		Debug.Log(isHitMeat);
 		return isHitMeat;
 	}
 
@@ -400,7 +399,7 @@ public class HominidAI : MonoBehaviour {
 			if (obj.tag == "Dog") {
 				float dis = Vector3.Distance (transform.position, obj.transform.position);
 
-				if(dis != 0 && dis < DOG_RANGE) {
+				if(dis < DOG_RANGE) {
 					return true;
 				}
 			}
@@ -424,16 +423,30 @@ public class HominidAI : MonoBehaviour {
 		}
 
 		if(nearestDog) {
+//			Vector3 dir = (nearestDog.transform.position - transform.position).normalized;
+
+			float x = 14;
+			float y = Random.Range(0, 18) - 9;
 			if (nearestDog.transform.position.x - transform.position.x > 0) {
-				agent.SetDestination (new Vector2(-11, 0));
+				x = -13;
+				y = y;
+
+
 			} else {
-				agent.SetDestination (new Vector2(11, 0));
+				x = 13;
+				y = y;
 			}
 
-			agent.speed = 5.0f;
+			agent.SetDestination (new Vector2(x, y));
+
+			agent.speed = 5.0f + RandomSpeed();
 			animator.SetBool ("Run", true);
 		}
 
 		return Result.success;
+	}
+
+	float RandomSpeed() {
+		return (Random.Range (0, 10) - 5) / 10.0f;
 	}
 }

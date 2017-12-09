@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114490667120229292}
   - component: {fileID: 58011303838868028}
   - component: {fileID: 114150283084022348}
+  - component: {fileID: 114849169430740250}
   m_Layer: 0
   m_Name: meet 1
   m_TagString: Dog
@@ -57,7 +58,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.8
+  m_Radius: 0.4
 --- !u!114 &114150283084022348
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -69,7 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d3e677f878c49f0ba923435b4972bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 4
   stoppingDistance: 1
 --- !u!114 &114490667120229292
 MonoBehaviour:
@@ -82,6 +83,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecd474656fb754cbe97873bc2550cecf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114849169430740250
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1891604959655714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6633bdf15d7af4a709a062884e2ed3cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DESTANCE: 3
+  attackTime: 2
 --- !u!212 &212504521047204122
 SpriteRenderer:
   m_ObjectHideFlags: 1
