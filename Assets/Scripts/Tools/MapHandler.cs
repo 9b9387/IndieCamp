@@ -93,10 +93,14 @@ public class MapHandler : MonoBehaviour {
 		return path;
 	}
 
-	public Vector2 GetRandomPoint(){
+	public Vector2 GetRandomPoint(bool isFarDis){
 		while (true) {
 			float x = Random.Range (Screen.width / 4, Screen.width / 4 * 3);
 			float y = Random.Range (Screen.height / 4, Screen.height / 4 * 3);
+			if (isFarDis){
+				x = Random.Range (0, 1) > 0.5f ? Random.Range (0, Screen.width / 4) : Random.Range (Screen.width / 4 * 3, Screen.width);
+				y = Random.Range (0, 1) > 0.5f ? Random.Range (0, Screen.height / 4) : Random.Range (Screen.height / 4 * 3, Screen.height);
+			}
 			Vector2 pos = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0));
 			int idx = WorldPosToIndex (pos);
 			if (idx == -1)
