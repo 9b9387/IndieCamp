@@ -114,8 +114,8 @@ public class MapHandler : MonoBehaviour {
 			float x = Random.Range (Screen.width / 4, Screen.width / 4 * 3);
 			float y = Random.Range (Screen.height / 4, Screen.height / 4 * 3);
 			if (isFarDis){
-				x = Random.Range (0f, 1f) > 0.5f ? Random.Range (0f, Screen.width / 4) : Random.Range (Screen.width / 4 * 3, Screen.width);
-				y = Random.Range (0f, 1f) > 0.5f ? Random.Range (0f, Screen.height / 4) : Random.Range (Screen.height / 4 * 3, Screen.height);
+				x = Random.Range (0f, 1f) > 0.5f ? Random.Range (Screen.width / 8, Screen.width / 4) : Random.Range (Screen.width / 4 * 3, Screen.width / 8 * 7);
+				y = Random.Range (0f, 1f) > 0.5f ? Random.Range (Screen.height / 8, Screen.height / 4) : Random.Range (Screen.height / 4 * 3, Screen.height / 8 * 7);
 			}
 			Vector2 pos = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0));
 			int idx = WorldPosToIndex (pos);
