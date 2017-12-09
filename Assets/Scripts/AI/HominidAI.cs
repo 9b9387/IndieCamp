@@ -62,13 +62,16 @@ public class HominidAI : MonoBehaviour {
 		if (isFire && campFire) {
 			campFire.SetActive (false);
 			isFire = false;
-			agent.speed = 1.0f + RandomSpeed();
-			attackTimer = 0;
-			isHitPit = false;
-			isHitMeat = false;
 		}
 
+		agent.speed = 1.0f + RandomSpeed();
+		attackTimer = 0;
+		isHitPit = false;
+		isHitMeat = false;
+
 		animator.SetBool ("Ext", false);
+		animator.SetBool ("Run", false);
+
 	}
 
 
@@ -429,12 +432,9 @@ public class HominidAI : MonoBehaviour {
 			float y = Random.Range(0, 18) - 9;
 			if (nearestDog.transform.position.x - transform.position.x > 0) {
 				x = -13;
-				y = y;
-
 
 			} else {
 				x = 13;
-				y = y;
 			}
 
 			agent.SetDestination (new Vector2(x, y));

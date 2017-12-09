@@ -28,6 +28,7 @@ public class World : Singleton<World> {
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnFireDeactive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.spawn_item, OnSpawnItem);
+		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnWin);
 
 
 		CreateHominid ();
@@ -70,21 +71,61 @@ public class World : Singleton<World> {
 		UIManager.Instant.StartTimer ();
 	}
 
+	public void OnWin(EventArgs args) {
+		ClearItems ();
+		RefreshItems (3);
+		CreateHominid ();
+	}
+
 	public void OnFireDeactive(EventArgs args) {
 		audio_bmg.Play ();
 		audio_outfire.Stop ();
+
+		ClearItems ();
+		RefreshItems (3);
+	}
+
+	public void ClearItems() {
+		for (int i = models.Count-1; i>=0; i--)
+		{
+			GameObject obj = models [i];
+			if (obj.tag == "Dog" || obj.tag == "Meet" || obj.tag == "Pit") {
+				Remove (obj);
+			}
+		}
+	}
+
+	public void RefreshItems(int count) {
+		ItemTypes[] types = new ItemTypes[3];
+
+		for (int i = 0; i < 3; i++) {
+			int index = Random.Range (1, 3);
+			if(index == 1) {
+				types[i] = ItemTypes.dog;
+			}
+
+			if(index == 2) {
+				types[i] = ItemTypes.meet;
+			}
+
+			if(index == 3) {
+				types[i] = ItemTypes.pit;
+			}
+		}
+			
+		UIManager.Instant.InitItemBar(types);
 	}
 
 
 	public void CreateHominid() {
-		for (int i = 0; i < 5; i++) {
+//		for (int i = 0; i < 5; i++) {
 			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 			NavAgent agent = huminid.GetComponent<NavAgent> ();
 			string tag = "enter";
 			Vector2 pos = MapHandler.Instant.GetRandomPoint ();
 			agent.SetDestination (pos, tag);
 			models.Add (huminid);
-		}
+//		}
 //
 //		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 //		NavAgent agent2 = huminid2.GetComponent<NavAgent> ();
