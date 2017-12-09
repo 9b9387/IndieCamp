@@ -14,6 +14,7 @@ public class NavAgent : MonoBehaviour {
 	int m_currentIdx = 0;
 	bool m_isMoving = false;
 	bool m_isArrive = true;
+	string m_tag = "";
 
 	public bool IsMoving{
 		get{
@@ -32,6 +33,16 @@ public class NavAgent : MonoBehaviour {
 	}
 
 	public void SetDestination(Vector2 destination){
+		m_tag = "";
+		m_currentIdx = 0;
+		m_destination = destination;
+		m_hasDestination = true;
+		m_isArrive = false;
+		m_path = MapHandler.Instant.FindPath (new Vector2 (transform.position.x, transform.position.y), destination);
+	}
+
+	public void SetDestination(Vector2 destination, string tag){
+		m_tag = tag;
 		m_currentIdx = 0;
 		m_destination = destination;
 		m_hasDestination = true;
@@ -69,7 +80,7 @@ public class NavAgent : MonoBehaviour {
 			m_currentIdx = 0;
 			m_hasDestination = false;
 			m_isMoving = false;
-			EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, gameObject);
+			EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			return;
 		}
 
@@ -94,8 +105,17 @@ public class NavAgent : MonoBehaviour {
 				m_currentIdx = 0;
 				m_hasDestination = false;
 				m_isMoving = false;
-				EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, gameObject);
+				EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			}
 		}
+	}
+}
+
+public class FinishInfo{
+	public string tag;
+	public GameObject obj;
+	public FinishInfo(string _tag, GameObject _obj){
+		tag = _tag;
+		obj = _obj;
 	}
 }
