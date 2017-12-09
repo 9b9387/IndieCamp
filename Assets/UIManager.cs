@@ -11,11 +11,14 @@ public class UIManager : MonoBehaviour {
 	public ItemIcon icon;
 	public GameObject[] img_icons;
 	public GameObject[] itemObjects;
+	public Sprite[] nums;
+	public Image timer;
 
 	List<RectTransform> items;
 
 	ItemIcon currentSelected;
 	GameObject shadow;
+	bool isTimerRunning = false;
 
 	void Start(){
 		if (Instant == null){
@@ -31,6 +34,8 @@ public class UIManager : MonoBehaviour {
 
 		ItemTypes[] types = {ItemTypes.dog, ItemTypes.dog, ItemTypes.meet, ItemTypes.pit, ItemTypes.meet};
 		InitItemBar (types);
+
+		StartTimer ();
 	}
 
 	void OnClickItem(EventArgs args){
@@ -72,6 +77,27 @@ public class UIManager : MonoBehaviour {
 		if (shadow){
 			Vector2 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 			shadow.transform.position = pos;
+		}
+	}
+
+	IEnumerator Timer(){
+		int cur = 3;
+		isTimerRunning = true;
+		while(cur > 0){
+			cur--;
+			timer.gameObject.SetActive (true);
+			timer.sprite = nums [cur];
+			yield return new WaitForSeconds (1);
+		}
+
+		timer.gameObject.SetActive (false);
+		isTimerRunning = false;
+		EventManager.Instance.PushEvent (HandyEvent.EventType.time_up, null);
+	}
+
+	public void StartTimer(){
+		if (!isTimerRunning){
+			StartCoroutine (Timer ());
 		}
 	}
 

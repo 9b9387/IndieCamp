@@ -33,5 +33,7 @@
 		click_item,
 
 		hit_meet,
+
+		time_up,
 	}
 }
