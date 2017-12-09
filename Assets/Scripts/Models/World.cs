@@ -38,12 +38,13 @@ public class World : Singleton<World> {
 		GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 		NavAgent agent = huminid.GetComponent<NavAgent> ();
 		string tag = "enter";
-		agent.SetDestination (new Vector2 (2, 1), tag);
+		Vector2 pos = MapHandler.Instant.GetRandomPoint ();
+		agent.SetDestination (pos, tag);
 
-
-		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
-		NavAgent agent2 = huminid2.GetComponent<NavAgent> ();
-		agent2.SetDestination (new Vector2(-2, 2), tag);
+//
+//		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
+//		NavAgent agent2 = huminid2.GetComponent<NavAgent> ();
+//		agent2.SetDestination (new Vector2(-2, 2), tag);
 	}
 
 	public void OnEnterComplate(EventArgs args) {

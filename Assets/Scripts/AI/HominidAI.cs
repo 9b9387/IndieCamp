@@ -69,7 +69,7 @@ public class HominidAI : MonoBehaviour {
 			campFire = fire;
 		}
 
-		Debug.Log ("OnFireActive" + isFire + " " + campFire);
+//		Debug.Log ("OnFireActive" + isFire + " " + campFire);
 
 	}
 
