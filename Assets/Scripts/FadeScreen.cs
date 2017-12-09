@@ -14,7 +14,7 @@ public class FadeScreen : MonoBehaviour {
 	void Start () {
 		fadeScreen = GetComponent<Image> ();
 		fadeScreen.color = new Color (0, 0, 0, 0);
-		Fade ();
+//		Fade ();
 	}
 	
 	public void Fade(){
