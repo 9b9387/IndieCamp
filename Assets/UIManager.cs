@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour {
 		ItemTypes[] types = {ItemTypes.dog, ItemTypes.dog, ItemTypes.meet, ItemTypes.pit, ItemTypes.meet};
 		InitItemBar (types);
 
-		StartTimer ();
+//		StartTimer ();
 	}
 
 	void OnClickItem(EventArgs args){
