@@ -12,6 +12,13 @@ public class NavAgent : MonoBehaviour {
 	Vector2 m_destination;
 	bool m_hasDestination = false;
 	int m_currentIdx = 0;
+	bool m_isMoving = false;
+
+	public bool IsMoving{
+		get{
+			return m_isMoving;
+		}
+	}
 
 	void Start () {
 		EventManager.Instance.AddListener (HandyEvent.EventType.process_map_finish, OnProcessMapFinish);
@@ -51,6 +58,7 @@ public class NavAgent : MonoBehaviour {
 			m_path = null;
 			m_currentIdx = 0;
 			m_hasDestination = false;
+			m_isMoving = false;
 			return;
 		}
 
@@ -58,6 +66,7 @@ public class NavAgent : MonoBehaviour {
 		Vector2 direction = (currentPoint - currentPos).normalized;
 		Vector2 movement = direction * speed * Time.deltaTime;
 		transform.position += new Vector3 (movement.x, movement.y, 0);
+		m_isMoving = true;
 
 		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
 		if (isNeerToCurrentPoint){
@@ -66,6 +75,7 @@ public class NavAgent : MonoBehaviour {
 				m_path = null;
 				m_currentIdx = 0;
 				m_hasDestination = false;
+				m_isMoving = false;
 			}
 		}
 	}
