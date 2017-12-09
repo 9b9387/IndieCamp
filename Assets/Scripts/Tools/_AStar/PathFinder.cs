@@ -37,9 +37,9 @@ public class PathFinder {
 				int checkX = node.gridX + x;
 				int checkY = node.gridY + y;
 
-				if (Mathf.Abs (x) == Mathf.Abs (y)) {
-					continue;
-				}
+//				if (Mathf.Abs (x) == Mathf.Abs (y)) {
+//					continue;
+//				}
 
 				if (IsInRange (checkX, checkY)) {
 					int index = checkY * mapData.mapWidth + checkX;

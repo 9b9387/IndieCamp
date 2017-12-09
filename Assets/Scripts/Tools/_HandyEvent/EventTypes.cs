@@ -17,5 +17,7 @@
 		mouse_click_object,
 
 		mouse_position,
+
+		process_map_finish,
 	}
 }
