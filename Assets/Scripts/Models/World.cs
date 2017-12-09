@@ -26,6 +26,9 @@ public class World : Singleton<World> {
 		EventManager.Instance.AddListener (HandyEvent.EventType.nav_finished, OnEnterComplate);
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_active, OnFireActive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
+		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnFireDeactive);
+		EventManager.Instance.AddListener (HandyEvent.EventType.spawn_item, OnSpawnItem);
+
 
 		CreateHominid ();
 		OnFireDeactive (null);
@@ -44,9 +47,17 @@ public class World : Singleton<World> {
 		return models;
 	}
 
+	public void OnSpawnItem(EventArgs args) {
+		GameObject obj = args.GetValue<GameObject> ();
+
+		AddModel (obj);
+	}
+
 	public void OnFireActive(EventArgs args) {
 		audio_outfire.Play ();
 		audio_bmg.Pause ();
+
+		UIManager.Instant.StartTimer ();
 	}
 
 	public void OnFireDeactive(EventArgs args) {

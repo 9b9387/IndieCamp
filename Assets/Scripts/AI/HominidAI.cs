@@ -8,6 +8,8 @@ using HandyEvent;
 public class HominidAI : MonoBehaviour {
 
 	//World world;
+
+	public float MEAT_RANGE = 5.0f;
 		
 	GameObject campFire;
 
@@ -19,6 +21,7 @@ public class HominidAI : MonoBehaviour {
 
 	bool isFire = false;
 	bool isStart = false;
+	bool isHitPit = false;
 
 	float lastPosX = 0.0f;
 
@@ -26,7 +29,9 @@ public class HominidAI : MonoBehaviour {
 	void Start () {
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_active, OnFireActive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
-		
+		EventManager.Instance.AddListener (HandyEvent.EventType.hit_pit, OnHitPit);
+		EventManager.Instance.AddListener (HandyEvent.EventType.hit_meet, OnHitMeat);
+
 		agent = GetComponent<NavAgent> ();
 		animator = GetComponent<Animator> ();
 		Sequence outFire = GetOutFireSeq ();
@@ -57,11 +62,32 @@ public class HominidAI : MonoBehaviour {
 			isFire = false;
 			agent.speed = 1.0f;
 			attackTimer = 0;
+			isHitPit = false;
 		}
 
 		animator.SetBool ("Ext", false);
-
 	}
+
+
+	void OnHitPit(EventArgs args) {
+		Debug.Log ("OnHitPit");
+		GameObject obj = args.GetValue<GameObject> ();
+
+		if (obj == gameObject && isFire) {
+			Debug.Log ("isHitPit");
+
+			isHitPit = true;
+		}
+	}
+
+	void OnHitMeat(EventArgs args) {
+//		GameObject obj = args.GetValue<GameObject> ();
+//
+//		if (obj == gameObject) {
+//			isHitPit = true;
+//		}
+	}
+
 		
 	public void StartAI() {
 		isStart = true;
@@ -211,8 +237,10 @@ public class HominidAI : MonoBehaviour {
 
 	// 移动的Sequence Node
 	Selector GetMoveSelector() {
+		Sequence pit = GetPitSequence ();
+		Sequence meat = GetMeatSequence ();
 		Sequence moveToFire = GetMoveToCampFireSeq ();
-		return new Selector (moveToFire);
+		return new Selector (pit, meat, moveToFire);
 	}
 
 	// 灭火的Sequence Node
@@ -245,5 +273,75 @@ public class HominidAI : MonoBehaviour {
 		agent.SetDestination (target);
 
 		return Result.success;
+	}
+
+
+	// 道具行为
+
+	bool IsHitPit() {
+		return isHitPit;
+	}
+
+	Sequence GetPitSequence() {
+		Condition isFire = new Condition (IsFire);
+		Condition isPit = new Condition (IsHitPit);
+		Action stop = new Action (Stop);
+		//Action todo;
+
+		return new Sequence (isFire, isPit, stop);
+	}
+
+	bool IsFoundMeat() {
+		List<GameObject> objs = World.Instance.GetModels ();
+
+//		float distance = 0;
+		foreach (GameObject obj in objs) {
+			if (obj.tag == "Meet") {
+				float dis = Vector3.Distance (transform.position, obj.transform.position);
+//				if (distance == 0 || distance > dis) {
+//					distance = dis;
+//				}
+				Debug.Log(dis + " " + MEAT_RANGE + " " + (dis < MEAT_RANGE));
+				if(dis != 0 && dis < MEAT_RANGE) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	Result MoveToMeat() {
+		Debug.Log ("MoveToMeat");
+		List<GameObject> objs = World.Instance.GetModels ();
+
+		float distance = 0;
+		GameObject nearestMeat = null;
+		foreach (GameObject obj in objs) {
+			if (obj.tag == "Meet") {
+				float dis = Vector3.Distance (transform.position, obj.transform.position);
+				if (distance == 0 || distance > dis) {
+					distance = dis;
+					nearestMeat = obj;
+				}
+			}
+		}
+
+		if (nearestMeat) {
+			animator.SetBool ("Run", true);
+			agent.speed = 5.0f;
+			agent.SetDestination (new Vector2(nearestMeat.transform.position.x, nearestMeat.transform.position.y));
+		}
+
+		return Result.success;
+	}
+
+	Sequence GetMeatSequence() {
+		Condition isFire = new Condition (IsFire);
+		Condition isFoundMeat = new Condition (IsFoundMeat);
+		Action stop = new Action (Stop);
+		Action moveToMeat = new Action (MoveToMeat);
+
+		return new Sequence (isFire, isFoundMeat, stop, moveToMeat);
 	}
 }
