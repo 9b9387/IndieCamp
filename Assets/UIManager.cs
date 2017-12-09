@@ -59,6 +59,7 @@ public class UIManager : MonoBehaviour {
 					currentSelected = null;
 					Destroy (shadow);
 					shadow = null;
+					EventManager.Instance.PushEvent (HandyEvent.EventType.spawn_item, obj);
 				}
 			}
 		}

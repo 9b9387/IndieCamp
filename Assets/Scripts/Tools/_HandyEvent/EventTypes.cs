@@ -35,5 +35,7 @@
 		hit_meet,
 
 		time_up,
+
+		spawn_item,
 	}
 }
