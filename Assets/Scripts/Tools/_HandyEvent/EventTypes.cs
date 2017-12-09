@@ -37,5 +37,7 @@
 		time_up,
 
 		spawn_item,
+
+		fade_finished,
 	}
 }
