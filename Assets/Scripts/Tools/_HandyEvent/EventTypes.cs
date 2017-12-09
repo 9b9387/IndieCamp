@@ -31,5 +31,7 @@
 
 
 		click_item,
+
+		hit_meet,
 	}
 }

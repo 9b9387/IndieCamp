@@ -10,11 +10,12 @@ public class UIManager : MonoBehaviour {
 
 	public ItemIcon icon;
 	public GameObject[] img_icons;
+	public GameObject[] itemObjects;
 
 	List<RectTransform> items;
 
 	ItemIcon currentSelected;
-	RectTransform shadow;
+	GameObject shadow;
 
 	void Start(){
 		if (Instant == null){
@@ -26,6 +27,7 @@ public class UIManager : MonoBehaviour {
 		items = new List<RectTransform> ();
 
 		EventManager.Instance.AddListener (HandyEvent.EventType.click_item, OnClickItem);
+		EventManager.Instance.AddListener (HandyEvent.EventType.player_action, OnPlayerAction);
 
 		ItemTypes[] types = {ItemTypes.dog, ItemTypes.dog, ItemTypes.meet, ItemTypes.pit, ItemTypes.meet};
 		InitItemBar (types);
@@ -36,14 +38,40 @@ public class UIManager : MonoBehaviour {
 		if (currentSelected == null){
 			currentSelected = item;
 			item.HideIcons ();
-			shadow = item.Icon.GetComponent<RectTransform> ();
+			shadow = Instantiate<GameObject> (img_icons[(int)item.Type]);
+		}
+	}
+
+	void OnPlayerAction(EventArgs args){
+		StandardInputType type = args.GetValue<StandardInputType> ();
+		if (type == StandardInputType.mouse_left_button_down){
+			if (currentSelected){
+				Vector2 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+				if (itemObjects[(int)currentSelected.Type]){
+					GameObject obj = Instantiate (itemObjects[(int)currentSelected.Type]) as GameObject;
+					obj.transform.position = pos;
+					obj.GetComponent<SpriteRenderer> ().sortingOrder = 1;
+					currentSelected = null;
+					Destroy (shadow);
+					shadow = null;
+				}
+			}
+		}
+
+		if (type == StandardInputType.mouse_right_button_down){
+			if (currentSelected){
+				currentSelected.Init (currentSelected.Type);
+				currentSelected = null;
+				Destroy (shadow);
+				shadow = null;
+			}
 		}
 	}
 
 	void Update(){
 		if (shadow){
-//			Vector2 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-			shadow.anchoredPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+			Vector2 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			shadow.transform.position = pos;
 		}
 	}
 
