@@ -59,25 +59,25 @@ public class NavAgent : MonoBehaviour {
 		}
 	}
 
+	public void StopMove() {
+		m_path = null;
+		m_isMoving = false;
+	}
+
 	void Update(){
-		Debug.Log ("nav agent ismoving = " + m_isMoving);
 		if (m_path == null) {
-			Debug.Log ("111");
 			return;
 		}
 
 		if (m_path.Length == 0) {
-			Debug.Log ("222");
 			return;
 		}
 
 		if (m_currentIdx >= m_path.Length) {
-			Debug.Log ("333");
 			return;
 		}
 
 		if (!m_hasDestination) {
-			Debug.Log ("444");
 			return;
 		}
 		

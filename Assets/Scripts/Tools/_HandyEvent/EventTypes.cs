@@ -22,8 +22,12 @@
 
 		fire_active,
 
+		fire_deactive,
+
 		hit_pit,
 
 		nav_finished,
+
+
 	}
 }

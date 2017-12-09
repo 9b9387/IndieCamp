@@ -12,53 +12,29 @@ public class HominidAI : MonoBehaviour {
 	GameObject campFire;
 
 	NavAgent agent;
+	Animator animator;
+
 	Selector root;
 	Vector3 moveTarget;
 
-	public float speed = 4.0f;
-
-	bool isMoving = false;
-
-
 	bool isFire = false;
-	bool isInStage = false;
-
 	bool isStart = false;
+
+	float lastPosX = 0.0f;
 
 	// Use this for initialization
 	void Start () {
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_active, OnFireActive);
+		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 		
 		agent = GetComponent<NavAgent> ();
+		animator = GetComponent<Animator> ();
+		Sequence outFire = GetOutFireSeq ();
+		Selector move = GetMoveSelector ();
+		Sequence partol = GetPartolSequence();
+		root = new Selector (outFire, move, partol);
 
-		Condition isFire = new Condition (IsFire);
-		Condition noMoving = new Condition (NoMoving);
-		Action moveToFire_action = new Action (MoveToFire);
-		Sequence move_seq = new Sequence (isFire, noMoving, moveToFire_action);
-
-		Condition isArriveCamp = new Condition (IsArriveCamp);
-		Action outfire_action = new Action (Outfire);
-		Sequence outfire_seq = new Sequence (isFire, isArriveCamp, outfire_action);
-
-		Condition noTarget = new Condition (NoTarget);
-		Action newPos = new Action (NewPos);
-		Sequence newPos_seq = new Sequence (noTarget, newPos);
-
-
-		Action patrol = new Action (Patrol);
-		Action clearPos = new Action (ClearPos);
-
-//		Condition isMoving = new Condition (IsMoving);
-		Sequence patrol_seq = new Sequence (noMoving, patrol, noMoving, clearPos);
-		Selector partol = new Selector (newPos_seq, patrol_seq);
-//		Condition isArrive = new Condition (IsArriveCamp);
-
-//		root = new Selector (outfire_seq, move_seq, partol);
-
-
-
-		Sequence movdToCampFire = GetMoveToCampFireSeq ();
-		root = new Selector (movdToCampFire);
+		animator.SetBool ("Run", true);
 	}
 
 	// 点火事件
@@ -68,11 +44,25 @@ public class HominidAI : MonoBehaviour {
 			isFire = fire.activeInHierarchy;
 			campFire = fire;
 		}
-
-//		Debug.Log ("OnFireActive" + isFire + " " + campFire);
-
 	}
 
+	float attackTimer = 0;
+	public float attackTime = 2f;
+
+	// 灭火事件
+	void OnFireDeactive(EventArgs args){
+			
+		if (isFire && campFire) {
+			campFire.SetActive (false);
+			isFire = false;
+			agent.speed = 1.0f;
+			attackTimer = 0;
+		}
+
+		animator.SetBool ("Ext", false);
+
+	}
+		
 	public void StartAI() {
 		isStart = true;
 	}
@@ -82,6 +72,23 @@ public class HominidAI : MonoBehaviour {
 		if (isStart) {
 			root.Execute ();
 		}
+
+
+		UpdateDir ();
+	}
+
+	void UpdateDir() {
+		// 向右走
+		if (gameObject.transform.position.x - lastPosX > 0) {
+			// 转向右
+			gameObject.transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x) * -1, transform.localScale.y, transform.lossyScale.z);
+		}
+		// 向左走
+		else if (gameObject.transform.position.x - lastPosX < 0) {
+			// 转向左
+			gameObject.transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x), transform.localScale.y, transform.lossyScale.z);
+		}
+		lastPosX = gameObject.transform.position.x;
 	}
 
 	bool NoTarget() {
@@ -105,12 +112,13 @@ public class HominidAI : MonoBehaviour {
 	bool IsArriveCamp() {
 		if (campFire) {
 			float dis = Vector2.Distance (campFire.transform.position, transform.position);
-			Debug.Log (dis);
-			return dis <= 1.2;
+//			Debug.Log (dis);
+			return dis <= 1.0;
 		}
 
 		return false;
 	}
+
 	Result MoveToFire() {
 		if (campFire) {
 			agent.SetDestination (campFire.transform.position);
@@ -121,10 +129,32 @@ public class HominidAI : MonoBehaviour {
 
 	Result Outfire() {
 		Debug.Log ("out fire");
-		if (campFire && campFire.activeInHierarchy) {
-			campFire.SetActive (false);
+		attackTimer += Time.deltaTime;
+
+		if (transform.localScale.x > 0) {
+			transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x), transform.localScale.y, transform.localScale.z);
+		} else {
+			transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
 		}
-		return Result.success;
+
+		if (campFire && campFire.activeInHierarchy) {
+//			campFire.SetActive (false);
+
+			if (attackTimer < attackTime) {
+				animator.SetBool ("Ext", true);
+				return Result.running;
+			}
+
+			if (isFire && campFire) {
+				EventManager.Instance.PushEvent (HandyEvent.EventType.fire_deactive, null);
+				return Result.success;
+
+			}
+
+		} else {
+			
+		}
+		return Result.failure;
 	}
 
 	Result Patrol() {
@@ -149,19 +179,70 @@ public class HominidAI : MonoBehaviour {
 	// 获取移动到篝火的Sequence Node
 	Sequence GetMoveToCampFireSeq() {
 		Condition isFire = new Condition (IsFire);
+		Condition isMoving = new Condition (IsMoving);
 		Condition noMoving = new Condition (NoMoving);
+		Action stop = new Action (Stop);
 		Action action = new Action (SetMoveTarget);
 
-		return new Sequence (isFire, noMoving, action);
+		Selector stopSelector = new Selector (noMoving, new Sequence(isMoving, stop));
+
+		return new Sequence (isFire, stopSelector, action);
+	}
+
+	Result Stop() {
+		agent.StopMove ();
+
+		return Result.success;
 	}
 
 	// 设置移动目标为火堆
 	Result SetMoveTarget() {
-		Debug.Log ("setMovetarget" + campFire);
+//		Debug.Log ("setMovetarget" + campFire);
 		if (campFire) {
+			agent.speed = 5.0f;
+			animator.SetBool ("Run", false);
 			agent.SetDestination (campFire.transform.position);
-			Debug.Log (agent.IsMoving);
+//			Debug.Log (agent.IsMoving);
 		}
+
+		return Result.success;
+	}
+	// end of Sequence Node
+
+	// 移动的Sequence Node
+	Selector GetMoveSelector() {
+		Sequence moveToFire = GetMoveToCampFireSeq ();
+		return new Selector (moveToFire);
+	}
+
+	// 灭火的Sequence Node
+	Sequence GetOutFireSeq() {
+		Condition isFire = new Condition (IsFire);
+		Condition isArriveCamp = new Condition (IsArriveCamp);
+
+		Condition isMoving = new Condition (IsMoving);
+		Condition noMoving = new Condition (NoMoving);
+		Action stop = new Action (Stop);
+
+		Selector stopSelector = new Selector (noMoving, new Sequence(isMoving, stop));
+
+		Action outfire_action = new Action (Outfire);
+		return new Sequence (isFire, isArriveCamp, stopSelector, outfire_action);
+	}
+
+	// 巡逻的Sequence Node 
+	Sequence GetPartolSequence() {
+		Condition noMoving = new Condition (NoMoving);
+		Action action = new Action (Parto);
+
+		return new Sequence (noMoving, action);
+	}
+
+	Result Parto() {
+		Vector2 target = MapHandler.Instant.GetRandomPoint ();
+		agent.speed = 1.0f;
+		animator.SetBool ("Run", false);
+		agent.SetDestination (target);
 
 		return Result.success;
 	}

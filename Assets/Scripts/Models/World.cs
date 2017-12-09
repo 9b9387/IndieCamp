@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using HandyEvent;
 
 public class World : Singleton<World> {
@@ -34,13 +35,15 @@ public class World : Singleton<World> {
 		return models;
 	}
 
+	[MenuItem("CreateHominid")]
 	public void CreateHominid() {
-		GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
-		NavAgent agent = huminid.GetComponent<NavAgent> ();
-		string tag = "enter";
-		Vector2 pos = MapHandler.Instant.GetRandomPoint ();
-		agent.SetDestination (pos, tag);
-
+		for (int i = 0; i < 3; i++) {
+			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
+			NavAgent agent = huminid.GetComponent<NavAgent> ();
+			string tag = "enter";
+			Vector2 pos = MapHandler.Instant.GetRandomPoint ();
+			agent.SetDestination (pos, tag);
+		}
 //
 //		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 //		NavAgent agent2 = huminid2.GetComponent<NavAgent> ();
