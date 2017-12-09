@@ -21,5 +21,7 @@
 		process_map_finish,
 
 		fire_active,
+
+		hit_pit,
 	}
 }
