@@ -69,6 +69,7 @@ public class NavAgent : MonoBehaviour {
 			m_currentIdx = 0;
 			m_hasDestination = false;
 			m_isMoving = false;
+			EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, gameObject);
 			return;
 		}
 
@@ -93,6 +94,7 @@ public class NavAgent : MonoBehaviour {
 				m_currentIdx = 0;
 				m_hasDestination = false;
 				m_isMoving = false;
+				EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, gameObject);
 			}
 		}
 	}
