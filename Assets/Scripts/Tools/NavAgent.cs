@@ -60,15 +60,21 @@ public class NavAgent : MonoBehaviour {
 
 	void Update(){
 		if (m_path == null)
+//			Debug.Log ("111");
 			return;
 
 		if (m_path.Length == 0)
+//			Debug.Log ("222");
+		
 			return;
 
 		if (m_currentIdx >= m_path.Length)
+//			Debug.Log ("333");
+		
 			return;
 
 		if (!m_hasDestination)
+//			Debug.Log ("444");
 			return;
 		
 		Vector2 currentPos = new Vector2 (transform.position.x, transform.position.y);
@@ -79,6 +85,7 @@ public class NavAgent : MonoBehaviour {
 			m_path = null;
 			m_currentIdx = 0;
 			m_hasDestination = false;
+			Debug.Log ("set false222");
 			m_isMoving = false;
 			EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			return;
@@ -91,6 +98,7 @@ public class NavAgent : MonoBehaviour {
 		Vector2 direction = (currentPoint - currentPos).normalized;
 		Vector2 movement = direction * speed * Time.deltaTime;
 		transform.position += new Vector3 (movement.x, movement.y, 0);
+		Debug.Log ("set true");
 		m_isMoving = true;
 		m_isArrive = false;
 //		int side = transform.position.x < m_destination.x ? -1 : 1;
@@ -104,6 +112,8 @@ public class NavAgent : MonoBehaviour {
 				m_path = null;
 				m_currentIdx = 0;
 				m_hasDestination = false;
+				Debug.Log ("set false111");
+
 				m_isMoving = false;
 				EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			}
