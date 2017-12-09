@@ -22,6 +22,7 @@ public class HominidAI : MonoBehaviour {
 	bool isFire = false;
 	bool isStart = false;
 	bool isHitPit = false;
+	bool isHitMeat = false;
 
 	float lastPosX = 0.0f;
 
@@ -63,6 +64,7 @@ public class HominidAI : MonoBehaviour {
 			agent.speed = 1.0f;
 			attackTimer = 0;
 			isHitPit = false;
+			isHitMeat = false;
 		}
 
 		animator.SetBool ("Ext", false);
@@ -81,11 +83,11 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	void OnHitMeat(EventArgs args) {
-//		GameObject obj = args.GetValue<GameObject> ();
-//
-//		if (obj == gameObject) {
-//			isHitPit = true;
-//		}
+		GameObject obj = args.GetValue<GameObject> ();
+
+		if (obj == gameObject && isFire) {
+			isHitMeat = true;
+		}
 	}
 
 		
@@ -336,12 +338,56 @@ public class HominidAI : MonoBehaviour {
 		return Result.success;
 	}
 
+	bool IsArriveMeat() {
+//		Debug.Log ("IsArriveMeat");
+//		List<GameObject> objs = World.Instance.GetModels ();
+//
+//		float distance = 0;
+//		GameObject nearestMeat = null;
+//		foreach (GameObject obj in objs) {
+//			if (obj.tag == "Meet") {
+//				float dis = Vector3.Distance (transform.position, obj.transform.position);
+//				if (distance == 0 || distance > dis) {
+//					distance = dis;
+//					nearestMeat = obj;
+//				}
+//			}
+//		}
+//
+//		if (nearestMeat) {
+//			float dis = Vector2.Distance (nearestMeat.transform.position, transform.position);
+//			Debug.Log (dis);
+//					
+//			return dis <= 1.0;
+//		}
+		Debug.Log(isHitMeat);
+		return isHitMeat;
+	}
+
+	Result EatMeat() {
+		//		Debug.Log ("out fire");
+		attackTimer += Time.deltaTime;
+
+		if (attackTimer < attackTime) {
+			animator.SetBool ("Ext", true);
+			return Result.running;
+		}
+
+		animator.SetBool ("Ext", false);
+		return Result.success;
+	}
+
 	Sequence GetMeatSequence() {
 		Condition isFire = new Condition (IsFire);
+
+		Condition isArriveMeat = new Condition (IsArriveMeat);
+		Action eatMeat = new Action (EatMeat);
 		Condition isFoundMeat = new Condition (IsFoundMeat);
 		Action stop = new Action (Stop);
 		Action moveToMeat = new Action (MoveToMeat);
 
-		return new Sequence (isFire, isFoundMeat, stop, moveToMeat);
+		Selector eat = new Selector(new Sequence(isArriveMeat, eatMeat), new Sequence(isFoundMeat, stop, moveToMeat));
+
+		return new Sequence (isFire, eat);
 	}
 }
