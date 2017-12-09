@@ -19,5 +19,11 @@
 		mouse_position,
 
 		process_map_finish,
+
+		fire_active,
+
+		hit_pit,
+
+		nav_finished,
 	}
 }

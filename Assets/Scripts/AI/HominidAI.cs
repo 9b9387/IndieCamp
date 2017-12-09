@@ -2,24 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BehaviourTree;
+using HandyEvent;
 
 
 public class HominidAI : MonoBehaviour {
 
 	//World world;
 		
-	public GameObject campFire;
+	GameObject campFire;
 
 	NavAgent agent;
 	Selector root;
-	Vector3 targetPos;
+	Vector3 moveTarget;
 
 	public float speed = 4.0f;
 
 	bool isMoving = false;
 
+
+	bool isFire = false;
+	bool isInStage = false;
+
+	bool isStart = false;
+
 	// Use this for initialization
 	void Start () {
+		EventManager.Instance.AddListener (HandyEvent.EventType.fire_active, OnFireActive);
 		
 		agent = GetComponent<NavAgent> ();
 
@@ -45,23 +53,48 @@ public class HominidAI : MonoBehaviour {
 		Selector partol = new Selector (newPos_seq, patrol_seq);
 //		Condition isArrive = new Condition (IsArriveCamp);
 
-		root = new Selector (outfire_seq, move_seq, partol);
+//		root = new Selector (outfire_seq, move_seq, partol);
+
+
+
+		Sequence movdToCampFire = GetMoveToCampFireSeq ();
+		root = new Selector (movdToCampFire);
 	}
-	
+
+	// 点火事件
+	void OnFireActive(EventArgs args){
+		GameObject fire = args.GetValue<GameObject>();
+		if (fire) {
+			isFire = fire.activeInHierarchy;
+			campFire = fire;
+		}
+
+//		Debug.Log ("OnFireActive" + isFire + " " + campFire);
+
+	}
+
+	public void StartAI() {
+		isStart = true;
+	}
+		
 	// Update is called once per frame
 	void Update () {
-		root.Execute ();
+		if (isStart) {
+			root.Execute ();
+		}
 	}
 
 	bool NoTarget() {
-		return targetPos.x == 0 && targetPos.y == 0;
+		return moveTarget.x == 0 && moveTarget.y == 0;
 	}
 
+	// 是否已经点火
 	bool IsFire() {
-		return campFire.activeInHierarchy;
+		return isFire;
 	}
 
 	bool NoMoving() {
+//		Debug.Log (agent.IsMoving);
 		return !agent.IsMoving;
 	}
 
@@ -78,7 +111,6 @@ public class HominidAI : MonoBehaviour {
 
 		return false;
 	}
-
 	Result MoveToFire() {
 		if (campFire) {
 			agent.SetDestination (campFire.transform.position);
@@ -96,7 +128,7 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	Result Patrol() {
-		agent.SetDestination (targetPos);
+		agent.SetDestination (moveTarget);
 		return Result.success;
 	}
 
@@ -104,12 +136,32 @@ public class HominidAI : MonoBehaviour {
 		int offsetX = Random.Range (3, 5);
 		int offsetY = Random.Range (3, 5);
 
-		targetPos = new Vector3 (transform.position.x + offsetX, transform.position.y + offsetY, transform.position.z);
+		moveTarget = new Vector3 (transform.position.x + offsetX, transform.position.y + offsetY, transform.position.z);
 		return Result.success;
 	}
 
 	Result ClearPos() {
-		targetPos = new Vector3 (0, 0, 0);
+		moveTarget = new Vector3 (0, 0, 0);
+
+		return Result.success;
+	}
+
+	// 获取移动到篝火的Sequence Node
+	Sequence GetMoveToCampFireSeq() {
+		Condition isFire = new Condition (IsFire);
+		Condition noMoving = new Condition (NoMoving);
+		Action action = new Action (SetMoveTarget);
+
+		return new Sequence (isFire, noMoving, action);
+	}
+
+	// 设置移动目标为火堆
+	Result SetMoveTarget() {
+		Debug.Log ("setMovetarget" + campFire);
+		if (campFire) {
+			agent.SetDestination (campFire.transform.position);
+			Debug.Log (agent.IsMoving);
+		}
 
 		return Result.success;
 	}

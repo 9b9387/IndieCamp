@@ -14,6 +14,7 @@ public class NavAgent : MonoBehaviour {
 	int m_currentIdx = 0;
 	bool m_isMoving = false;
 	bool m_isArrive = true;
+	string m_tag = "";
 
 	public bool IsMoving{
 		get{
@@ -32,6 +33,17 @@ public class NavAgent : MonoBehaviour {
 	}
 
 	public void SetDestination(Vector2 destination){
+		m_tag = "";
+		m_currentIdx = 0;
+		m_destination = destination;
+		m_hasDestination = true;
+		m_isArrive = false;
+		m_isMoving = true;
+		m_path = MapHandler.Instant.FindPath (new Vector2 (transform.position.x, transform.position.y), destination);
+	}
+
+	public void SetDestination(Vector2 destination, string tag){
+		m_tag = tag;
 		m_currentIdx = 0;
 		m_destination = destination;
 		m_hasDestination = true;
@@ -48,17 +60,26 @@ public class NavAgent : MonoBehaviour {
 	}
 
 	void Update(){
-		if (m_path == null)
+		Debug.Log ("nav agent ismoving = " + m_isMoving);
+		if (m_path == null) {
+			Debug.Log ("111");
 			return;
+		}
 
-		if (m_path.Length == 0)
+		if (m_path.Length == 0) {
+			Debug.Log ("222");
 			return;
+		}
 
-		if (m_currentIdx >= m_path.Length)
+		if (m_currentIdx >= m_path.Length) {
+			Debug.Log ("333");
 			return;
+		}
 
-		if (!m_hasDestination)
+		if (!m_hasDestination) {
+			Debug.Log ("444");
 			return;
+		}
 		
 		Vector2 currentPos = new Vector2 (transform.position.x, transform.position.y);
 		float distance = Vector2.Distance (currentPos, m_destination);
@@ -68,7 +89,9 @@ public class NavAgent : MonoBehaviour {
 			m_path = null;
 			m_currentIdx = 0;
 			m_hasDestination = false;
+			Debug.Log ("set false222");
 			m_isMoving = false;
+			EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			return;
 		}
 
@@ -79,10 +102,11 @@ public class NavAgent : MonoBehaviour {
 		Vector2 direction = (currentPoint - currentPos).normalized;
 		Vector2 movement = direction * speed * Time.deltaTime;
 		transform.position += new Vector3 (movement.x, movement.y, 0);
+//		Debug.Log ("set true");
 		m_isMoving = true;
 		m_isArrive = false;
-		int side = transform.position.x < m_destination.x ? -1 : 1;
-		transform.localScale = new Vector3 (side * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+//		int side = transform.position.x < m_destination.x ? -1 : 1;
+//		transform.localScale = new Vector3 (side * transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
 		bool isNeerToCurrentPoint = Vector2.Distance (new Vector2 (transform.position.x, transform.position.y), currentPoint) < 0.1f;
 		if (isNeerToCurrentPoint){
@@ -92,8 +116,20 @@ public class NavAgent : MonoBehaviour {
 				m_path = null;
 				m_currentIdx = 0;
 				m_hasDestination = false;
+//				Debug.Log ("set false111");
+
 				m_isMoving = false;
+				EventManager.Instance.PushEvent (HandyEvent.EventType.nav_finished, new FinishInfo(m_tag, gameObject));
 			}
 		}
+	}
+}
+
+public class FinishInfo{
+	public string tag;
+	public GameObject obj;
+	public FinishInfo(string _tag, GameObject _obj){
+		tag = _tag;
+		obj = _obj;
 	}
 }
