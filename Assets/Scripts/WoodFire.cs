@@ -15,10 +15,7 @@ public class WoodFire : MonoBehaviour {
 		ClickInfo info = args.GetValue<ClickInfo> ();
 		if (info.Type == StandardInputType.mouse_left_button_down){
 			if (info.ClickedObject == gameObject){
-				fire.SetActive (!fire.activeInHierarchy);
-				if (fire.activeInHierarchy){
-					EventManager.Instance.PushEvent (HandyEvent.EventType.fire_active, null);
-				}
+				EventManager.Instance.PushEvent (HandyEvent.EventType.fire_active, fire);
 			}
 		}
 	}
