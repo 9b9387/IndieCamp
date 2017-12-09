@@ -128,7 +128,7 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	Result Outfire() {
-		Debug.Log ("out fire");
+//		Debug.Log ("out fire");
 		attackTimer += Time.deltaTime;
 
 		if (transform.localScale.x > 0) {
@@ -239,7 +239,7 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	Result Parto() {
-		Vector2 target = MapHandler.Instant.GetRandomPoint ();
+		Vector2 target = MapHandler.Instant.GetRandomPoint (true);
 		agent.speed = 1.0f;
 		animator.SetBool ("Run", false);
 		agent.SetDestination (target);
