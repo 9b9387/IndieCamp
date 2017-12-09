@@ -10,6 +10,7 @@ public class HominidAI : MonoBehaviour {
 	//World world;
 
 	public float MEAT_RANGE = 5.0f;
+	public float DOG_RANGE = 3.0f;
 		
 	GameObject campFire;
 
@@ -147,14 +148,6 @@ public class HominidAI : MonoBehaviour {
 		return false;
 	}
 
-	Result MoveToFire() {
-		if (campFire) {
-			agent.SetDestination (campFire.transform.position);
-		}
-
-		return Result.success;
-	}
-
 	Result Outfire() {
 //		Debug.Log ("out fire");
 		attackTimer += Time.deltaTime;
@@ -228,7 +221,7 @@ public class HominidAI : MonoBehaviour {
 //		Debug.Log ("setMovetarget" + campFire);
 		if (campFire) {
 			agent.speed = 5.0f;
-			animator.SetBool ("Run", false);
+			animator.SetBool ("Run", true);
 			agent.SetDestination (campFire.transform.position);
 //			Debug.Log (agent.IsMoving);
 		}
@@ -240,9 +233,10 @@ public class HominidAI : MonoBehaviour {
 	// 移动的Sequence Node
 	Selector GetMoveSelector() {
 		Sequence pit = GetPitSequence ();
+		Sequence dog = GetDogSequence ();
 		Sequence meat = GetMeatSequence ();
 		Sequence moveToFire = GetMoveToCampFireSeq ();
-		return new Selector (pit, meat, moveToFire);
+		return new Selector (pit, dog, meat, moveToFire);
 	}
 
 	// 灭火的Sequence Node
@@ -339,27 +333,6 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	bool IsArriveMeat() {
-//		Debug.Log ("IsArriveMeat");
-//		List<GameObject> objs = World.Instance.GetModels ();
-//
-//		float distance = 0;
-//		GameObject nearestMeat = null;
-//		foreach (GameObject obj in objs) {
-//			if (obj.tag == "Meet") {
-//				float dis = Vector3.Distance (transform.position, obj.transform.position);
-//				if (distance == 0 || distance > dis) {
-//					distance = dis;
-//					nearestMeat = obj;
-//				}
-//			}
-//		}
-//
-//		if (nearestMeat) {
-//			float dis = Vector2.Distance (nearestMeat.transform.position, transform.position);
-//			Debug.Log (dis);
-//					
-//			return dis <= 1.0;
-//		}
 		Debug.Log(isHitMeat);
 		return isHitMeat;
 	}
@@ -368,12 +341,30 @@ public class HominidAI : MonoBehaviour {
 		//		Debug.Log ("out fire");
 		attackTimer += Time.deltaTime;
 
+		List<GameObject> objs = World.Instance.GetModels ();
+
+		float distance = 0;
+		GameObject nearestMeat = null;
+		foreach (GameObject obj in objs) {
+			if (obj.tag == "Meet") {
+				float dis = Vector3.Distance (transform.position, obj.transform.position);
+				if (distance == 0 || distance > dis) {
+					distance = dis;
+					nearestMeat = obj;
+				}
+			}
+		}
+			
 		if (attackTimer < attackTime) {
 			animator.SetBool ("Ext", true);
+
 			return Result.running;
 		}
 
 		animator.SetBool ("Ext", false);
+		if (nearestMeat) {
+			World.Instance.Remove (nearestMeat);
+		}
 		return Result.success;
 	}
 
@@ -389,5 +380,60 @@ public class HominidAI : MonoBehaviour {
 		Selector eat = new Selector(new Sequence(isArriveMeat, eatMeat), new Sequence(isFoundMeat, stop, moveToMeat));
 
 		return new Sequence (isFire, eat);
+	}
+
+	Sequence GetDogSequence() {
+		Condition isFire = new Condition (IsFire);
+
+		Condition isInRange = new Condition (IsInRange);
+		Action escape = new Action (Escape);
+
+		Selector dog = new Selector(new Sequence(isInRange, escape));
+		return new Sequence (isFire, dog);
+
+	}
+
+	bool IsInRange() {
+		List<GameObject> objs = World.Instance.GetModels ();
+
+		foreach (GameObject obj in objs) {
+			if (obj.tag == "Dog") {
+				float dis = Vector3.Distance (transform.position, obj.transform.position);
+
+				if(dis != 0 && dis < DOG_RANGE) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	Result Escape() {
+		List<GameObject> objs = World.Instance.GetModels ();
+
+		float distance = 0;
+		GameObject nearestDog = null;
+		foreach (GameObject obj in objs) {
+			if (obj.tag == "Dog") {
+				float dis = Vector3.Distance (transform.position, obj.transform.position);
+				if (distance == 0 || distance > dis) {
+					distance = dis;
+					nearestDog = obj;
+				}
+			}
+		}
+
+		if(nearestDog) {
+			if (nearestDog.transform.position.x - transform.position.x > 0) {
+				agent.SetDestination (new Vector2(-11, 0));
+			} else {
+				agent.SetDestination (new Vector2(11, 0));
+			}
+
+			agent.speed = 5.0f;
+			animator.SetBool ("Run", true);
+		}
+
+		return Result.success;
 	}
 }

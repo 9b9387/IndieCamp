@@ -575,6 +575,12 @@ Prefab:
       propertyPath: timer
       value: 
       objectReference: {fileID: 1943717283}
+    - target: {fileID: 114727461370193206, guid: 5eb15077be1be40a9b7b9c038852d71e,
+        type: 2}
+      propertyPath: itemObjects.Array.data[1]
+      value: 
+      objectReference: {fileID: 1891604959655714, guid: c9a68e9f905234a08a4f47d852160b50,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5eb15077be1be40a9b7b9c038852d71e, type: 2}
   m_IsPrefabParent: 0
@@ -716,7 +722,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 974295466}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3179414, y: 2.0452769, z: -0.10655359}
+  m_LocalPosition: {x: -10.9, y: 2.0452769, z: -0.10655359}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 121641740}
@@ -864,7 +870,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 5904e325715cb40ae81e4bae909f6c07, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

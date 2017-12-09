@@ -43,6 +43,16 @@ public class World : Singleton<World> {
 		models.Add(obj);
 	}
 
+	public void Remove(GameObject obj) {
+//		foreach(GameObject o in models) {
+//			if (o == obj) {
+//			}
+//		}
+//
+		models.Remove (obj);
+		Destroy (obj);
+	}
+
 	public List<GameObject> GetModels() {
 		return models;
 	}
@@ -66,12 +76,13 @@ public class World : Singleton<World> {
 	}
 
 	public void CreateHominid() {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
 			NavAgent agent = huminid.GetComponent<NavAgent> ();
 			string tag = "enter";
 			Vector2 pos = MapHandler.Instant.GetRandomPoint ();
 			agent.SetDestination (pos, tag);
+			models.Add (huminid);
 		}
 //
 //		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
