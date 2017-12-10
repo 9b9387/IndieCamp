@@ -45,6 +45,8 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	void OnDestroy() {
+		Debug.Log ("###OnDestroy");
+
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_active, OnFireActive);
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_pit, OnHitPit);

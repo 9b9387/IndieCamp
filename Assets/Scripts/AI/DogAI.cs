@@ -40,7 +40,7 @@ public class DogAI : MonoBehaviour {
 		Sequence chase = GetChaseSquence ();
 		Action stop = new Action (Stop);
 
-		root = new Selector (pit, meat, chase, stop);
+		root = new Selector (meat, chase, stop);
 	}
 
 	void OnDestroy() {

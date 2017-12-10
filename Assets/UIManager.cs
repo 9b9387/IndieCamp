@@ -44,7 +44,9 @@ public class UIManager : MonoBehaviour {
 		ItemIcon item = args.GetValue<ItemIcon> ();
 		if (currentSelected == null){
 			currentSelected = item;
-			item.HideIcons ();
+			if(item) {
+				item.HideIcons ();
+			}
 			shadow = Instantiate<GameObject> (img_icons[(int)item.Type]);
 		}
 	}
