@@ -306,16 +306,16 @@ public class HominidAI : MonoBehaviour {
 		float scalex = (float)(gameObject.transform.localScale.x);
 		float scaley = (float)(gameObject.transform.localScale.y);
 
-		int dir = scalex / Mathf.Abs (scalex);
+		float dir = scalex / Mathf.Abs (scalex);
 		scalex = Mathf.Abs (scalex);
-		scalex -= 0.001f;
-		scaley -= 0.001f;
+		scalex -= 0.1f;
+		scaley -= 0.1f;
 
 		scalex *= dir;
 		gameObject.transform.localScale = new Vector3 (scalex, scaley, 1);
 		Debug.Log (scalex);
 
-		if (scalex > 0) {
+		if (Mathf.Abs(scalex) > 0) {
 			Debug.Log (scalex);
 			return Result.running;
 		}
