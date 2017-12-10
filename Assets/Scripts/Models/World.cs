@@ -39,7 +39,9 @@ public class World : Singleton<World> {
 //		EventManager.Instance.AddListener (HandyEvent.EventType.start_new_day, OnStartNewDay);
 
 
-		CreateHominid ();
+		for (int i = 0; i < 3; i++) {
+			CreateHominid ();
+		}
 		OnFireDeactive (null);
 	}
 	
@@ -53,11 +55,7 @@ public class World : Singleton<World> {
 	}
 
 	public void Remove(GameObject obj) {
-//		foreach(GameObject o in models) {
-//			if (o == obj) {
-//			}
-//		}
-//
+
 		models.Remove (obj);
 		Destroy (obj);
 	}
