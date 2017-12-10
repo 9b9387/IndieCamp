@@ -710,7 +710,7 @@ MonoBehaviour:
   icon: {fileID: 114532478476325392, guid: 2bff1a3efb6684f8a9781a402f25d6de, type: 2}
   img_icons:
   - {fileID: 1065396728480772, guid: 29382f7c85994494ea05dcd313ca148c, type: 2}
-  - {fileID: 1844160962244932, guid: fbfb389aa57fc4614bec6ba6776f901e, type: 2}
+  - {fileID: 0}
   - {fileID: 1714330335606362, guid: 9366523122d9c4cd5bfa9863056fbe39, type: 2}
   itemObjects:
   - {fileID: 1891604959655714, guid: 3f5e0203afc0a4186b4ecc1df92582b2, type: 2}

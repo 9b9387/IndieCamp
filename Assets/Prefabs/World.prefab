@@ -51,7 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a06709542472430a8f73cc44023248e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  day: 0
   config:
   - day: 1
     manCount: 3
