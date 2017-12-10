@@ -14,6 +14,8 @@ public class World : Singleton<World> {
 
 	List<GameObject> models;
 
+	public GameObject flame;
+
 
 	public AudioSource audio_bmg;
 	public AudioSource audio_outfire;
@@ -31,13 +33,14 @@ public class World : Singleton<World> {
 		EventManager.Instance.AddListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnFireDeactive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.spawn_item, OnSpawnItem);
-		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnWin);
-		EventManager.Instance.AddListener (HandyEvent.EventType.fade_finished, OnFadeFinish);
-		EventManager.Instance.AddListener (HandyEvent.EventType.start_new_day, OnStartNewDay);
+//		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnWin);
+		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnTimeUp);
+//		EventManager.Instance.AddListener (HandyEvent.EventType.fade_finished, OnFadeFinish);
+//		EventManager.Instance.AddListener (HandyEvent.EventType.start_new_day, OnStartNewDay);
 
 
-//		CreateHominid ();
-//		OnFireDeactive (null);
+		CreateHominid ();
+		OnFireDeactive (null);
 	}
 	
 	// Update is called once per frame
@@ -57,6 +60,19 @@ public class World : Singleton<World> {
 //
 		models.Remove (obj);
 		Destroy (obj);
+	}
+
+	void OnTimeUp(EventArgs args) {
+//		WoodFire obj = FindObjectOfType<WoodFire> ();
+//		obj.gameObject.activeInHierarchy
+		if (flame.activeInHierarchy) {
+			CreateHominid ();
+			EventManager.Instance.PushEvent (HandyEvent.EventType.fire_deactive, flame);
+			flame.SetActive (false);
+		} else {
+			ClearItems ();
+			RefreshItems (3);
+		}
 	}
 
 	public List<GameObject> GetModels() {
@@ -79,8 +95,8 @@ public class World : Singleton<World> {
 	public void OnWin(EventArgs args) {
 		curDay++;
 		ClearItems ();
-		ClearHuman ();
-		UIManager.Instant.Fade (curDay);
+//		ClearHuman ();
+//		UIManager.Instant.Fade (curDay);
 	}
 
 	public void ClearHuman(){
@@ -97,8 +113,8 @@ public class World : Singleton<World> {
 		audio_outfire.Stop ();
 //
 		ClearItems ();
-//		RefreshItems (3);
-		UIManager.Instant.InitItemBar (curCfg.items);
+		RefreshItems (3);
+//		UIManager.Instant.InitItemBar (curCfg.items);
 	}
 
 	public void ClearItems() {
@@ -115,7 +131,8 @@ public class World : Singleton<World> {
 		ItemTypes[] types = new ItemTypes[count];
 
 		for (int i = 0; i < 3; i++) {
-			int index = Random.Range (1, 3);
+			int index = Random.Range (0, 3);
+			Debug.Log ("idnex" + index);
 			if(index == 1) {
 				types[i] = ItemTypes.dog;
 			}
@@ -124,7 +141,7 @@ public class World : Singleton<World> {
 				types[i] = ItemTypes.meet;
 			}
 
-			if(index == 3) {
+			if(index == 0) {
 				types[i] = ItemTypes.pit;
 			}
 		}
@@ -174,15 +191,15 @@ public class World : Singleton<World> {
 		}
 	}
 
-	public void StartGame(){
-		Debug.Log ("start");
-		UIManager.Instant.Fade (1);
-	}
+//	public void StartGame(){
+//		Debug.Log ("start");
+//		UIManager.Instant.Fade (1);
+//	}
 
-	void OnFadeFinish(EventArgs args){
-		Debug.Log ("fadefinish");
-		UIManager.Instant.HideTitle ();
-	}
+//	void OnFadeFinish(EventArgs args){
+//		Debug.Log ("fadefinish");
+//		UIManager.Instant.HideTitle ();
+//	}
 
 	void OnStartNewDay(EventArgs args){
 		int day = args.GetValue<int> ();
