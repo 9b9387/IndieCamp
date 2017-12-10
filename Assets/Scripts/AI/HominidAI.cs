@@ -45,6 +45,8 @@ public class HominidAI : MonoBehaviour {
 	}
 
 	void OnDestroy() {
+		Debug.Log ("###OnDestroy");
+
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_active, OnFireActive);
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
 		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_pit, OnHitPit);
@@ -77,7 +79,14 @@ public class HominidAI : MonoBehaviour {
 		isHitMeat = false;
 
 		animator.SetBool ("Ext", false);
-		animator.SetBool ("Run", false);
+
+		if (isStart) {
+			animator.SetBool ("Run", false);
+			agent.speed = 1.0f;
+		} else {
+			animator.SetBool ("Run", true);
+			agent.speed = 5.0f;
+		}
 
 	}
 
@@ -311,12 +320,15 @@ public class HominidAI : MonoBehaviour {
 		scalex -= 0.1f;
 		scaley -= 0.1f;
 
+		if (scaley < 0) {
+			scaley = 0;
+		}
+
 		scalex *= dir;
 		gameObject.transform.localScale = new Vector3 (scalex, scaley, 1);
 		Debug.Log (scalex);
 
 		if (Mathf.Abs(scalex) > 0) {
-			Debug.Log (scalex);
 			return Result.running;
 		}
 

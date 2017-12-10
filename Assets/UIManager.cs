@@ -15,6 +15,9 @@ public class UIManager : MonoBehaviour {
 	public Image timer;
 	public FadeScreen fadeScreen;
 	public Image titleScreen;
+	public Image iconParent;
+	public Image chenggong;
+	public AnimationCurve fadeCure;
 
 	List<RectTransform> items;
 
@@ -44,7 +47,9 @@ public class UIManager : MonoBehaviour {
 		ItemIcon item = args.GetValue<ItemIcon> ();
 		if (currentSelected == null){
 			currentSelected = item;
-			item.HideIcons ();
+			if(item) {
+				item.HideIcons ();
+			}
 			shadow = Instantiate<GameObject> (img_icons[(int)item.Type]);
 		}
 	}
@@ -112,6 +117,7 @@ public class UIManager : MonoBehaviour {
 
 		for (int i = 0; i < types.Length; i++) {
 			ItemIcon item = Instantiate<ItemIcon> (icon) as ItemIcon;
+			item.transform.parent = iconParent.transform;
 			item.Init (types[i]);
 			RectTransform tran = item.GetComponent<RectTransform> ();
 			tran.SetParent (transform);
@@ -129,5 +135,31 @@ public class UIManager : MonoBehaviour {
 
 	public void HideTitle(){
 		titleScreen.gameObject.SetActive (false);
+	}
+
+	public void StartGame(){
+		titleScreen.gameObject.SetActive (false);
+		World.Instance.OnFireDeactive (null);
+	}
+
+	public void ShowSuccess(){
+		
+		StartCoroutine (StartShowSuccess());
+	}
+
+	IEnumerator StartShowSuccess(){
+		chenggong.gameObject.SetActive (true);
+		chenggong.color = new Color (1,1,1,1);
+		float time = 0;
+		while (time < 2) {
+			time += Time.deltaTime;
+			float a = fadeCure.Evaluate (time);
+			chenggong.color = new Color (1,1,1,a);
+			yield return null;
+		}
+
+		chenggong.gameObject.SetActive (false);
+
+		yield break;
 	}
 }
