@@ -39,5 +39,7 @@
 		spawn_item,
 
 		fade_finished,
+
+		start_new_day
 	}
 }

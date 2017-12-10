@@ -7,6 +7,8 @@ using HandyEvent;
 public class FadeScreen : MonoBehaviour {
 
 	public AnimationCurve curve;
+	public Text dayText;
+	public Text msg;
 
 	Image fadeScreen;
 	bool IsFading = false;
@@ -36,6 +38,8 @@ public class FadeScreen : MonoBehaviour {
 
 		IsFading = false;
 		EventManager.Instance.PushEvent (HandyEvent.EventType.fade_finished, null);
-		yield break;
+		yield return new WaitForSeconds (2);
+		EventManager.Instance.PushEvent (HandyEvent.EventType.start_new_day, null);
+		fadeScreen.color = new Color (0, 0, 0, 0);
 	}
 }

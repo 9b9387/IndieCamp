@@ -5,6 +5,8 @@ using UnityEditor;
 using HandyEvent;
 
 public class World : Singleton<World> {
+	public int day;
+	public GameConfig[] config;
 
 	public Vector2 spawnLocation;
 
@@ -75,6 +77,7 @@ public class World : Singleton<World> {
 		ClearItems ();
 		RefreshItems (3);
 		CreateHominid ();
+		UIManager.Instant.Fade ();
 	}
 
 	public void OnFireDeactive(EventArgs args) {
@@ -142,4 +145,11 @@ public class World : Singleton<World> {
 			ai.StartAI ();
 		}
 	}
+}
+
+[System.Serializable]
+public class GameConfig{
+	public int day;
+	public int manCount;
+	public ItemTypes[] items;
 }

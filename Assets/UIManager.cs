@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour {
 	public GameObject[] itemObjects;
 	public Sprite[] nums;
 	public Image timer;
+	public FadeScreen fadeScreen;
 
 	List<RectTransform> items;
 
@@ -32,8 +33,8 @@ public class UIManager : MonoBehaviour {
 		EventManager.Instance.AddListener (HandyEvent.EventType.click_item, OnClickItem);
 		EventManager.Instance.AddListener (HandyEvent.EventType.player_action, OnPlayerAction);
 
-		ItemTypes[] types = {ItemTypes.dog, ItemTypes.dog, ItemTypes.meet, ItemTypes.pit, ItemTypes.meet};
-		InitItemBar (types);
+//		ItemTypes[] types = {ItemTypes.dog, ItemTypes.dog, ItemTypes.meet, ItemTypes.pit, ItemTypes.meet};
+//		InitItemBar (types);
 
 //		StartTimer ();
 	}
@@ -119,5 +120,9 @@ public class UIManager : MonoBehaviour {
 			tran.anchorMin = Vector2.zero;
 			items.Add (tran);
 		}
+	}
+
+	public void Fade(){
+		fadeScreen.Fade ();	
 	}
 }
