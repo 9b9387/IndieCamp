@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using HandyEvent;
 
 public class World : Singleton<World> {
@@ -42,7 +41,6 @@ public class World : Singleton<World> {
 		for (int i = 0; i < 3; i++) {
 			CreateHominid ();
 		}
-		OnFireDeactive (null);
 	}
 	
 	// Update is called once per frame
@@ -67,6 +65,7 @@ public class World : Singleton<World> {
 			CreateHominid ();
 			EventManager.Instance.PushEvent (HandyEvent.EventType.fire_deactive, flame);
 			flame.SetActive (false);
+			UIManager.Instant.ShowSuccess ();
 		} else {
 			ClearItems ();
 			RefreshItems (3);
