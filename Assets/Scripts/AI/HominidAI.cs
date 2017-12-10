@@ -44,6 +44,13 @@ public class HominidAI : MonoBehaviour {
 		animator.SetBool ("Run", true);
 	}
 
+	void OnDestroy() {
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_active, OnFireActive);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_pit, OnHitPit);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_meet, OnHitMeat);
+	}
+
 	// 点火事件
 	void OnFireActive(EventArgs args){
 		GameObject fire = args.GetValue<GameObject>();
@@ -285,9 +292,36 @@ public class HominidAI : MonoBehaviour {
 		Condition isFire = new Condition (IsFire);
 		Condition isPit = new Condition (IsHitPit);
 		Action stop = new Action (Stop);
-		//Action todo;
+		Action fall = new Action(Fall);
 
-		return new Sequence (isFire, isPit, stop);
+		return new Sequence (isFire, isPit, stop, fall);
+	}
+
+
+//	float scaleTime = 0.0f;
+//	float fallTime = 1.0f;
+
+	Result Fall() {
+
+		float scalex = (float)(gameObject.transform.localScale.x);
+		float scaley = (float)(gameObject.transform.localScale.y);
+
+		int dir = scalex / Mathf.Abs (scalex);
+		scalex = Mathf.Abs (scalex);
+		scalex -= 0.001f;
+		scaley -= 0.001f;
+
+		scalex *= dir;
+		gameObject.transform.localScale = new Vector3 (scalex, scaley, 1);
+		Debug.Log (scalex);
+
+		if (scalex > 0) {
+			Debug.Log (scalex);
+			return Result.running;
+		}
+
+		World.Instance.Remove (gameObject);
+		return Result.success;
 	}
 
 	bool IsFoundMeat() {

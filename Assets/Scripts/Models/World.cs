@@ -75,7 +75,7 @@ public class World : Singleton<World> {
 
 	public void OnWin(EventArgs args) {
 		ClearItems ();
-		RefreshItems (3);
+//		RefreshItems (3);
 		CreateHominid ();
 		UIManager.Instant.Fade ();
 	}
