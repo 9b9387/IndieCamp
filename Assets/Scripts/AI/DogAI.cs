@@ -227,7 +227,7 @@ public class DogAI : MonoBehaviour {
 	}
 
 	bool IsArriveMeat() {
-		Debug.Log(isHitMeat);
+		Debug.Log("isHitMeat " + isHitMeat);
 		return isHitMeat;
 	}
 

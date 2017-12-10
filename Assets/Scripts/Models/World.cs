@@ -102,7 +102,7 @@ public class World : Singleton<World> {
 		ItemTypes[] types = new ItemTypes[3];
 
 		for (int i = 0; i < 3; i++) {
-			int index = Random.Range (1, 3);
+			int index = Random.Range (0, 3);
 			if(index == 1) {
 				types[i] = ItemTypes.dog;
 			}
@@ -111,7 +111,7 @@ public class World : Singleton<World> {
 				types[i] = ItemTypes.meet;
 			}
 
-			if(index == 3) {
+			if(index == 0) {
 				types[i] = ItemTypes.pit;
 			}
 		}

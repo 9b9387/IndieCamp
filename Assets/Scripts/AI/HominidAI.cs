@@ -327,6 +327,7 @@ public class HominidAI : MonoBehaviour {
 		}
 
 		if (nearestMeat) {
+			animator.SetBool ("Ext", false);
 			animator.SetBool ("Run", true);
 			agent.speed = 5.0f + RandomSpeed();
 			agent.SetDestination (new Vector2(nearestMeat.transform.position.x, nearestMeat.transform.position.y));
@@ -436,6 +437,9 @@ public class HominidAI : MonoBehaviour {
 			} else {
 				x = 13;
 			}
+
+			animator.SetBool ("Ext", false);
+			animator.SetBool ("Run", true);
 
 			agent.SetDestination (new Vector2(x, y));
 
