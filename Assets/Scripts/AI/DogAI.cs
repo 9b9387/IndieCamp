@@ -10,6 +10,8 @@ public class DogAI : MonoBehaviour {
 
 	Selector root;
 	NavAgent agent;
+	Animator animator;
+
 
 	bool isFire = false;
 	bool isHitPit = false;
@@ -18,6 +20,7 @@ public class DogAI : MonoBehaviour {
 
 	float attackTimer = 0;
 	public float attackTime = 2f;
+	float lastPosX = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +30,9 @@ public class DogAI : MonoBehaviour {
 		EventManager.Instance.AddListener (HandyEvent.EventType.hit_meet, OnHitMeat);
 
 		agent = GetComponent<NavAgent> ();
+		animator = GetComponent<Animator> ();
+
+		animator.SetBool ("Run", false);
 
 
 		Sequence pit = GetPitSequence ();
@@ -36,10 +42,35 @@ public class DogAI : MonoBehaviour {
 
 		root = new Selector (pit, meat, chase, stop);
 	}
+
+	void OnDestroy() {
+		Debug.Log ("OnDestroy");
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_active, OnFireActive);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.fire_deactive, OnFireDeactive);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_pit, OnHitPit);
+		EventManager.Instance.RemoveListener (HandyEvent.EventType.hit_meet, OnHitMeat);
+	}
 	
 	// Update is called once per frame
 	void Update () {
 		root.Execute ();
+
+		UpdateDir ();
+
+	}
+
+	void UpdateDir() {
+		// 向右走
+		if (gameObject.transform.position.x - lastPosX > 0) {
+			// 转向右
+			gameObject.transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x) * -1, transform.localScale.y, transform.lossyScale.z);
+		}
+		// 向左走
+		else if (gameObject.transform.position.x - lastPosX < 0) {
+			// 转向左
+			gameObject.transform.localScale = new Vector3 (Mathf.Abs (transform.localScale.x), transform.localScale.y, transform.lossyScale.z);
+		}
+		lastPosX = gameObject.transform.position.x;
 	}
 
 	// 点火事件
@@ -122,6 +153,7 @@ public class DogAI : MonoBehaviour {
 		}
 
 		if (nearestHuman) {
+			animator.SetBool ("Run", true);
 			agent.SetDestination (new Vector2(nearestHuman.transform.position.x, nearestHuman.transform.position.y));
 
 		}
@@ -136,7 +168,7 @@ public class DogAI : MonoBehaviour {
 
 	Result Stop() {
 		agent.StopMove ();
-
+		animator.SetBool ("Run", false);
 		return Result.success;
 	}
 
@@ -186,7 +218,7 @@ public class DogAI : MonoBehaviour {
 		}
 
 		if (nearestMeat) {
-//			animator.SetBool ("Run", true);
+			animator.SetBool ("Run", true);
 			agent.speed = 5.0f;
 			agent.SetDestination (new Vector2(nearestMeat.transform.position.x, nearestMeat.transform.position.y));
 		}
@@ -218,8 +250,7 @@ public class DogAI : MonoBehaviour {
 		}
 
 		if (attackTimer < attackTime) {
-//			animator.SetBool ("Ext", true);
-
+			animator.SetBool ("Run", false);
 			return Result.running;
 		}
 
