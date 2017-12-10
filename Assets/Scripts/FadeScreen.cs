@@ -10,23 +10,27 @@ public class FadeScreen : MonoBehaviour {
 	public Text dayText;
 	public Text msg;
 
+	public string[] msgs;
+	public string[] days;
+
 	Image fadeScreen;
 	bool IsFading = false;
 
 	void Start () {
 		fadeScreen = GetComponent<Image> ();
 		fadeScreen.color = new Color (0, 0, 0, 0);
-//		Fade ();
+		dayText.gameObject.SetActive (false);
+		msg.gameObject.SetActive (false);
 	}
 	
-	public void Fade(){
+	public void Fade(int day){
 		if (IsFading)
 			return;
 		
-		StartCoroutine (StartFade());
+		StartCoroutine (StartFade(day));
 	}
 
-	IEnumerator StartFade(){
+	IEnumerator StartFade(int day){
 		float time = 0f;
 		IsFading = true;
 		while(time < 2){
@@ -38,8 +42,14 @@ public class FadeScreen : MonoBehaviour {
 
 		IsFading = false;
 		EventManager.Instance.PushEvent (HandyEvent.EventType.fade_finished, null);
+		dayText.text = days [day - 1];
+		msg.text = msgs [day - 1];
+		dayText.gameObject.SetActive (true);
+		msg.gameObject.SetActive (true);
 		yield return new WaitForSeconds (2);
-		EventManager.Instance.PushEvent (HandyEvent.EventType.start_new_day, null);
+		EventManager.Instance.PushEvent (HandyEvent.EventType.start_new_day, day);
 		fadeScreen.color = new Color (0, 0, 0, 0);
+		dayText.gameObject.SetActive (false);
+		msg.gameObject.SetActive (false);
 	}
 }

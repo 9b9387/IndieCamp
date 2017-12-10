@@ -5,7 +5,6 @@ using UnityEditor;
 using HandyEvent;
 
 public class World : Singleton<World> {
-	public int day;
 	public GameConfig[] config;
 
 	public Vector2 spawnLocation;
@@ -20,6 +19,8 @@ public class World : Singleton<World> {
 	public AudioSource audio_outfire;
 
 
+	GameConfig curCfg;
+	int curDay;
 
 	// Use this for initialization
 	void Start () {
@@ -31,10 +32,12 @@ public class World : Singleton<World> {
 		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnFireDeactive);
 		EventManager.Instance.AddListener (HandyEvent.EventType.spawn_item, OnSpawnItem);
 		EventManager.Instance.AddListener (HandyEvent.EventType.time_up, OnWin);
+		EventManager.Instance.AddListener (HandyEvent.EventType.fade_finished, OnFadeFinish);
+		EventManager.Instance.AddListener (HandyEvent.EventType.start_new_day, OnStartNewDay);
 
 
-		CreateHominid ();
-		OnFireDeactive (null);
+//		CreateHominid ();
+//		OnFireDeactive (null);
 	}
 	
 	// Update is called once per frame
@@ -74,18 +77,28 @@ public class World : Singleton<World> {
 	}
 
 	public void OnWin(EventArgs args) {
+		curDay++;
 		ClearItems ();
-//		RefreshItems (3);
-		CreateHominid ();
-		UIManager.Instant.Fade ();
+		ClearHuman ();
+		UIManager.Instant.Fade (curDay);
+	}
+
+	public void ClearHuman(){
+		for (int i = 0; i < models.Count; i++) {
+			GameObject obj = models [i];
+			if (obj.tag == "Human"){
+				Remove (obj);
+			}
+		}
 	}
 
 	public void OnFireDeactive(EventArgs args) {
 		audio_bmg.Play ();
 		audio_outfire.Stop ();
-
+//
 		ClearItems ();
-		RefreshItems (3);
+//		RefreshItems (3);
+		UIManager.Instant.InitItemBar (curCfg.items);
 	}
 
 	public void ClearItems() {
@@ -99,10 +112,10 @@ public class World : Singleton<World> {
 	}
 
 	public void RefreshItems(int count) {
-		ItemTypes[] types = new ItemTypes[3];
+		ItemTypes[] types = new ItemTypes[count];
 
 		for (int i = 0; i < 3; i++) {
-			int index = Random.Range (0, 3);
+			int index = Random.Range (1, 3);
 			if(index == 1) {
 				types[i] = ItemTypes.dog;
 			}
@@ -111,7 +124,7 @@ public class World : Singleton<World> {
 				types[i] = ItemTypes.meet;
 			}
 
-			if(index == 0) {
+			if(index == 3) {
 				types[i] = ItemTypes.pit;
 			}
 		}
@@ -135,6 +148,21 @@ public class World : Singleton<World> {
 //		agent2.SetDestination (new Vector2(-2, 2), tag);
 	}
 
+	public void CreateHominid(int count) {
+		for (int i = 0; i < count; i++) {
+			GameObject huminid = Instantiate<GameObject> (huminidPrefabs, new Vector3 (spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
+			NavAgent agent = huminid.GetComponent<NavAgent> ();
+			string tag = "enter";
+			Vector2 pos = MapHandler.Instant.GetRandomPoint ();
+			agent.SetDestination (pos, tag);
+			models.Add (huminid);
+		}
+		//
+		//		GameObject huminid2 = Instantiate<GameObject> (huminidPrefabs, new Vector3(spawnLocation.x, spawnLocation.y, 0), Quaternion.identity);
+		//		NavAgent agent2 = huminid2.GetComponent<NavAgent> ();
+		//		agent2.SetDestination (new Vector2(-2, 2), tag);
+	}
+
 	public void OnEnterComplate(EventArgs args) {
 		FinishInfo info = args.GetValue<FinishInfo> ();
 		string tag = info.tag;
@@ -144,6 +172,25 @@ public class World : Singleton<World> {
 			HominidAI ai = obj.GetComponent<HominidAI> ();
 			ai.StartAI ();
 		}
+	}
+
+	public void StartGame(){
+		Debug.Log ("start");
+		UIManager.Instant.Fade (1);
+	}
+
+	void OnFadeFinish(EventArgs args){
+		Debug.Log ("fadefinish");
+		UIManager.Instant.HideTitle ();
+	}
+
+	void OnStartNewDay(EventArgs args){
+		int day = args.GetValue<int> ();
+		GameConfig cfg = config [day - 1];
+		curCfg = cfg;
+		curDay = day;
+		CreateHominid (cfg.manCount);
+		UIManager.Instant.InitItemBar (cfg.items);
 	}
 }
 

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4028906901106838}
   - component: {fileID: 212832793749531130}
   m_Layer: 0
-  m_Name: icon_pit
+  m_Name: icon_dog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour {
 	public Sprite[] nums;
 	public Image timer;
 	public FadeScreen fadeScreen;
+	public Image titleScreen;
 
 	List<RectTransform> items;
 
@@ -122,7 +123,11 @@ public class UIManager : MonoBehaviour {
 		}
 	}
 
-	public void Fade(){
-		fadeScreen.Fade ();	
+	public void Fade(int day){
+		fadeScreen.Fade (day);	
+	}
+
+	public void HideTitle(){
+		titleScreen.gameObject.SetActive (false);
 	}
 }
